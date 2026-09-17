@@ -1,0 +1,112 @@
+<div class="blue-tool-card">
+  <div class="blue-tool-header">
+    <h2>Social Media Image Resizer & Dimension Checker</h2>
+    <p>Resize, crop, or fit your images perfectly for any social media platform or custom dimensions.</p>
+  </div>
+
+  <div class="blue-tool-body">
+    <!-- 1. Platform Preset -->
+    <div class="input-block">
+      <label class="blue-label" for="platformSelect">1. Select Platform Preset:</label>
+      <div class="input-wrapper">
+        <select id="platformSelect" class="blue-input" onchange="handlePresetChange()">
+          <optgroup label="Custom Option">
+            <option value="custom" selected>Custom Dimensions (Set Below)</option>
+          </optgroup>
+          <optgroup label="Instagram">
+            <option value="1080x1080">Instagram Square Post (1080 x 1080 px)</option>
+            <option value="1080x1350">Instagram Portrait Post (1080 x 1350 px)</option>
+            <option value="1080x1920">Instagram Story / Reel (1080 x 1920 px)</option>
+            <option value="1080x566">Instagram Landscape (1080 x 566 px)</option>
+          </optgroup>
+          <optgroup label="Facebook">
+            <option value="1200x630">Facebook Shared Image (1200 x 630 px)</option>
+            <option value="1080x1080">Facebook Square Post (1080 x 1080 px)</option>
+            <option value="1080x1920">Facebook Story (1080 x 1920 px)</option>
+            <option value="820x312">Facebook Cover Photo (820 x 312 px)</option>
+          </optgroup>
+          <optgroup label="YouTube">
+            <option value="1280x720">YouTube Thumbnail (1280 x 720 px)</option>
+            <option value="2560x1440">YouTube Channel Banner (2560 x 1440 px)</option>
+            <option value="800x800">YouTube Profile Picture (800 x 800 px)</option>
+          </optgroup>
+          <optgroup label="LinkedIn">
+            <option value="1200x627">LinkedIn Shared Image (1200 x 627 px)</option>
+            <option value="1080x1080">LinkedIn Square Post (1080 x 1080 px)</option>
+            <option value="1584x396">LinkedIn Cover Photo (1584 x 396 px)</option>
+          </optgroup>
+          <optgroup label="X (Twitter)">
+            <option value="1600x900">X / Twitter In-Feed Post (1600 x 900 px)</option>
+            <option value="1500x500">X / Twitter Header Photo (1500 x 500 px)</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <!-- Custom Dimensions -->
+    <div class="dimension-inputs">
+      <div class="input-block half">
+        <label class="blue-label" for="customWidth">Width (px):</label>
+        <div class="input-wrapper">
+          <input type="number" id="customWidth" class="blue-input" value="1080" min="10" max="10000" oninput="onCustomDimensionChange()">
+        </div>
+      </div>
+      <div class="input-block half">
+        <label class="blue-label" for="customHeight">Height (px):</label>
+        <div class="input-wrapper">
+          <input type="number" id="customHeight" class="blue-input" value="1080" min="10" max="10000" oninput="onCustomDimensionChange()">
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Resize Mode -->
+    <div class="input-block">
+      <label class="blue-label">2. Select Resize Mode:</label>
+      <div class="mode-selector">
+        <label class="radio-label">
+          <input type="radio" name="resizeMode" value="fit" checked onchange="toggleBgColorOption(); updatePreview();">
+          Fit & Pad (No cropping, adds background padding)
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="resizeMode" value="crop" onchange="toggleBgColorOption(); updatePreview();">
+          Auto Center-Crop (Fills frame, cuts edges)
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="resizeMode" value="stretch" onchange="toggleBgColorOption(); updatePreview();">
+          Exact Stretch (Fits exact size, may stretch image)
+        </label>
+      </div>
+    </div>
+
+    <!-- Background Color for Fit mode -->
+    <div class="input-block" id="bgColorGroup">
+      <label class="blue-label" for="bgColor">Background Padding Color:</label>
+      <div class="color-picker-row">
+        <input type="color" id="bgColor" value="#ffffff" onchange="updatePreview()">
+        <span id="colorHex">#ffffff</span>
+      </div>
+    </div>
+
+    <!-- 3. Upload Photo -->
+    <div class="input-block">
+      <label class="blue-label" for="imageInput">3. Upload Photo:</label>
+      <div class="input-wrapper">
+        <input type="file" id="imageInput" class="blue-file-input" accept="image/*" onchange="processImage(event)">
+      </div>
+    </div>
+
+    <!-- Output & Download Area -->
+    <div id="actionArea" style="display: none;">
+      <div id="statusBadge" class="badge"></div>
+      <p id="originalInfo" class="info-text"></p>
+
+      <div id="resultContainer" class="result-container">
+        <h3 class="blue-subheading">Resized Image Preview:</h3>
+        <div class="canvas-holder">
+          <canvas id="outputCanvas"></canvas>
+        </div>
+        <a id="downloadBtn" class="blue-download-btn" download="social-media-image.png">Download Image</a>
+      </div>
+    </div>
+  </div>
+</div>
