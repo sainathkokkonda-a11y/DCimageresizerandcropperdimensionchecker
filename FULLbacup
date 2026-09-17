@@ -1,0 +1,396 @@
+<div class="blue-tool-card">
+  <div class="blue-tool-header">
+    <h2>Social Media Image Resizer & Dimension Checker</h2>
+    <p>Resize, crop, or fit your images perfectly for any social media platform or custom dimensions.</p>
+  </div>
+
+  <div class="blue-tool-body">
+    <!-- 1. Platform Preset -->
+    <div class="input-block">
+      <label class="blue-label" for="platformSelect">1. Select Platform Preset:</label>
+      <div class="input-wrapper">
+        <select id="platformSelect" class="blue-input" onchange="handlePresetChange()">
+          <optgroup label="Custom Option">
+            <option value="custom" selected>Custom Dimensions (Set Below)</option>
+          </optgroup>
+          <optgroup label="Instagram">
+            <option value="1080x1080">Instagram Square Post (1080 x 1080 px)</option>
+            <option value="1080x1350">Instagram Portrait Post (1080 x 1350 px)</option>
+            <option value="1080x1920">Instagram Story / Reel (1080 x 1920 px)</option>
+            <option value="1080x566">Instagram Landscape (1080 x 566 px)</option>
+          </optgroup>
+          <optgroup label="Facebook">
+            <option value="1200x630">Facebook Shared Image (1200 x 630 px)</option>
+            <option value="1080x1080">Facebook Square Post (1080 x 1080 px)</option>
+            <option value="1080x1920">Facebook Story (1080 x 1920 px)</option>
+            <option value="820x312">Facebook Cover Photo (820 x 312 px)</option>
+          </optgroup>
+          <optgroup label="YouTube">
+            <option value="1280x720">YouTube Thumbnail (1280 x 720 px)</option>
+            <option value="2560x1440">YouTube Channel Banner (2560 x 1440 px)</option>
+            <option value="800x800">YouTube Profile Picture (800 x 800 px)</option>
+          </optgroup>
+          <optgroup label="LinkedIn">
+            <option value="1200x627">LinkedIn Shared Image (1200 x 627 px)</option>
+            <option value="1080x1080">LinkedIn Square Post (1080 x 1080 px)</option>
+            <option value="1584x396">LinkedIn Cover Photo (1584 x 396 px)</option>
+          </optgroup>
+          <optgroup label="X (Twitter)">
+            <option value="1600x900">X / Twitter In-Feed Post (1600 x 900 px)</option>
+            <option value="1500x500">X / Twitter Header Photo (1500 x 500 px)</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <!-- Custom Dimensions -->
+    <div class="dimension-inputs">
+      <div class="input-block half">
+        <label class="blue-label" for="customWidth">Width (px):</label>
+        <div class="input-wrapper">
+          <input type="number" id="customWidth" class="blue-input" value="1080" min="10" max="10000" oninput="onCustomDimensionChange()">
+        </div>
+      </div>
+      <div class="input-block half">
+        <label class="blue-label" for="customHeight">Height (px):</label>
+        <div class="input-wrapper">
+          <input type="number" id="customHeight" class="blue-input" value="1080" min="10" max="10000" oninput="onCustomDimensionChange()">
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Resize Mode -->
+    <div class="input-block">
+      <label class="blue-label">2. Select Resize Mode:</label>
+      <div class="mode-selector">
+        <label class="radio-label">
+          <input type="radio" name="resizeMode" value="fit" checked onchange="toggleBgColorOption(); updatePreview();">
+          Fit & Pad (No cropping, adds background padding)
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="resizeMode" value="crop" onchange="toggleBgColorOption(); updatePreview();">
+          Auto Center-Crop (Fills frame, cuts edges)
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="resizeMode" value="stretch" onchange="toggleBgColorOption(); updatePreview();">
+          Exact Stretch (Fits exact size, may stretch image)
+        </label>
+      </div>
+    </div>
+
+    <!-- Background Color for Fit mode -->
+    <div class="input-block" id="bgColorGroup">
+      <label class="blue-label" for="bgColor">Background Padding Color:</label>
+      <div class="color-picker-row">
+        <input type="color" id="bgColor" value="#ffffff" onchange="updatePreview()">
+        <span id="colorHex">#ffffff</span>
+      </div>
+    </div>
+
+    <!-- 3. Upload Photo -->
+    <div class="input-block">
+      <label class="blue-label" for="imageInput">3. Upload Photo:</label>
+      <div class="input-wrapper">
+        <input type="file" id="imageInput" class="blue-file-input" accept="image/*" onchange="processImage(event)">
+      </div>
+    </div>
+
+    <!-- Output & Download Area -->
+    <div id="actionArea" style="display: none;">
+      <div id="statusBadge" class="badge"></div>
+      <p id="originalInfo" class="info-text"></p>
+
+      <div id="resultContainer" class="result-container">
+        <h3 class="blue-subheading">Resized Image Preview:</h3>
+        <div class="canvas-holder">
+          <canvas id="outputCanvas"></canvas>
+        </div>
+        <a id="downloadBtn" class="blue-download-btn" download="social-media-image.png">Download Image</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .blue-tool-card {
+    max-width: 650px;
+    margin: 30px auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    font-family: Arial, sans-serif;
+    border: 2px solid #1565c0;
+    overflow: hidden;
+  }
+  .blue-tool-header {
+    background: #1565c0;
+    padding: 24px 20px;
+    text-align: center;
+    color: #ffffff;
+  }
+  .blue-tool-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  .blue-tool-header p {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    color: #e3f2fd;
+    opacity: 0.95;
+  }
+  .blue-tool-body {
+    padding: 24px;
+  }
+  .input-block {
+    margin-bottom: 20px;
+  }
+  .blue-label {
+    display: block;
+    font-weight: bold;
+    color: #1565c0;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+  .input-wrapper {
+    background: #ffffff;
+    border: 1.5px solid #90caf9;
+    border-radius: 8px;
+    padding: 2px;
+    transition: border-color 0.2s;
+  }
+  .input-wrapper:focus-within {
+    border-color: #1565c0;
+  }
+  .blue-input, .blue-file-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #333;
+    box-sizing: border-box;
+  }
+  .dimension-inputs {
+    display: flex;
+    gap: 16px;
+  }
+  .dimension-inputs .half {
+    flex: 1;
+  }
+  .mode-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f4f8fb;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid #e3f2fd;
+  }
+  .radio-label {
+    font-size: 14px;
+    font-weight: normal;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .color-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .color-picker-row input[type="color"] {
+    width: 45px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  #colorHex {
+    font-weight: bold;
+    color: #1565c0;
+    font-size: 14px;
+  }
+  .info-text {
+    font-size: 14px;
+    color: #444;
+    text-align: center;
+    margin: 12px 0;
+  }
+  .badge {
+    display: block;
+    width: max-content;
+    margin: 10px auto;
+    padding: 6px 16px;
+    font-weight: bold;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 13px;
+  }
+  .badge.pass { background-color: #2e7d32; }
+  .badge.warn { background-color: #ef6c00; }
+  .result-container {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px dashed #90caf9;
+    text-align: center;
+  }
+  .blue-subheading {
+    font-size: 16px;
+    color: #1565c0;
+    margin-bottom: 12px;
+  }
+  .canvas-holder {
+    max-width: 100%;
+    overflow: hidden;
+    margin: 15px auto;
+    background-color: #f4f8fb;
+    border-radius: 8px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #e3f2fd;
+  }
+  canvas {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #bbdefb;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  }
+  .blue-download-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background-color: #1565c0;
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 15px;
+    box-sizing: border-box;
+    transition: background-color 0.2s;
+  }
+  .blue-download-btn:hover {
+    background-color: #0d47a1;
+  }
+</style>
+
+<script>
+  let loadedImage = null;
+
+  function handlePresetChange() {
+    const preset = document.getElementById('platformSelect').value;
+    if (preset !== 'custom') {
+      const [w, h] = preset.split('x').map(Number);
+      document.getElementById('customWidth').value = w;
+      document.getElementById('customHeight').value = h;
+    }
+    updatePreview();
+  }
+
+  function onCustomDimensionChange() {
+    document.getElementById('platformSelect').value = 'custom';
+    updatePreview();
+  }
+
+  function toggleBgColorOption() {
+    const mode = document.querySelector('input[name="resizeMode"]:checked').value;
+    const bgColorGroup = document.getElementById('bgColorGroup');
+    if (mode === 'fit') {
+      bgColorGroup.style.display = 'block';
+    } else {
+      bgColorGroup.style.display = 'none';
+    }
+  }
+
+  function processImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        loadedImage = img;
+        document.getElementById('actionArea').style.display = 'block';
+        updatePreview();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function updatePreview() {
+    if (!loadedImage) return;
+
+    const targetWidth = parseInt(document.getElementById('customWidth').value) || 1080;
+    const targetHeight = parseInt(document.getElementById('customHeight').value) || 1080;
+    const mode = document.querySelector('input[name="resizeMode"]:checked').value;
+    const bgColor = document.getElementById('bgColor').value;
+    document.getElementById('colorHex').innerText = bgColor;
+
+    const statusBadge = document.getElementById('statusBadge');
+    const infoText = document.getElementById('originalInfo');
+
+    const isMatch = (loadedImage.width === targetWidth && loadedImage.height === targetHeight);
+
+    if (isMatch) {
+      statusBadge.className = 'badge pass';
+      statusBadge.innerText = 'Perfect Dimensions Match';
+    } else {
+      statusBadge.className = 'badge warn';
+      statusBadge.innerText = 'Dimensions Mismatch - Ready to Resize';
+    }
+
+    infoText.innerHTML = `Original: <b>${loadedImage.width} x ${loadedImage.height} px</b> | Target: <b>${targetWidth} x ${targetHeight} px</b>`;
+
+    const canvas = document.getElementById('outputCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    const imgWidth = loadedImage.width;
+    const imgHeight = loadedImage.height;
+
+    if (mode === 'fit') {
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+      const ratio = Math.min(targetWidth / imgWidth, targetHeight / imgHeight);
+      const newWidth = imgWidth * ratio;
+      const newHeight = imgHeight * ratio;
+      const x = (targetWidth - newWidth) / 2;
+      const y = (targetHeight - newHeight) / 2;
+
+      ctx.drawImage(loadedImage, 0, 0, imgWidth, imgHeight, x, y, newWidth, newHeight);
+    } else if (mode === 'crop') {
+      const targetAspect = targetWidth / targetHeight;
+      const imgAspect = imgWidth / imgHeight;
+
+      let sourceX = 0, sourceY = 0, sourceWidth = imgWidth, sourceHeight = imgHeight;
+
+      if (imgAspect > targetAspect) {
+        sourceWidth = imgHeight * targetAspect;
+        sourceX = (imgWidth - sourceWidth) / 2;
+      } else {
+        sourceHeight = imgWidth / targetAspect;
+        sourceY = (imgHeight - sourceY) / 2;
+      }
+
+      ctx.drawImage(loadedImage, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
+    } else if (mode === 'stretch') {
+      ctx.drawImage(loadedImage, 0, 0, imgWidth, imgHeight, 0, 0, targetWidth, targetHeight);
+    }
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.href = canvas.toDataURL('image/png');
+    downloadBtn.download = `social-media-${targetWidth}x${targetHeight}.png`;
+  }
+</script>
